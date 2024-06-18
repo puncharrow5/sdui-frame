@@ -38,8 +38,8 @@ export const Inquiry = ({ id, data, siteEmail }: Props) => {
     if (!isValidNumber(emailForm.phoneNumber)) {
       return alert("올바른 전화번호 형식이 아닙니다.");
     }
-    if (emailForm.content.length < 20) {
-      return alert("문의 내용을 20자 이상 작성해주세요.");
+    if (emailForm.content.length < 10) {
+      return alert("문의 내용을 10자 이상 작성해주세요.");
     } else {
       const response = await fetch("/api/sendEmail", {
         method: "POST",
