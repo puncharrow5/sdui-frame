@@ -43,9 +43,9 @@ export const Container = ({ data }: Props) => {
     <>
       <Header
         sectionNames={sectionNames}
-        logo={data?.header.logo}
-        backgroundColor={data.header.backgroundColor}
-        textColor={data.header.textColor}
+        logo={data.header?.logo}
+        backgroundColor={data.header?.backgroundColor}
+        textColor={data.header?.textColor}
       />
       {sections.map((value: ComponentEntity, index: number) => (
         <Section key={index} id={value.name} data={value} />
