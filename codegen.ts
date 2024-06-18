@@ -2,20 +2,35 @@ import type { CodegenConfig } from "@graphql-codegen/cli";
 
 const config: CodegenConfig = {
   overwrite: true,
-  schema: [process.env.GQL_URL!],
+  schema: ["http://10.10.100.57:3000/graphql"],
   documents: [
-    "./src/graphql/fragments/**/*.ts",
-    "./src/graphql/query/**/*.ts",
-    "./src/graphql/mutation/**/*.ts",
-    "./src/graphql/subscription/**/*.ts",
-    "./src/**/*/gql.ts",
-    "./src/**/*/*.gql.ts",
-    "!./src/**/*.graphql.ts",
+    "./graphql/fragments/**/*.ts",
+    "./graphql/query/**/*.ts",
+    "./graphql/mutation/**/*.ts",
+    "./graphql/subscription/**/*.ts",
+    "./**/*/gql.ts",
+    "./**/*/*.gql.ts",
+    "!./**/*.graphql.ts",
   ],
   generates: {
-    "src/gql/": {
-      preset: "client",
-      plugins: [],
+    "./graphql/generated/types.ts": {
+      hooks: {
+        afterOneFileWrite: ["prettier --write"],
+      },
+      config: {
+        skipTypename: true,
+      },
+      plugins: [
+        "typescript",
+        "typescript-operations",
+        {
+          "typescript-react-apollo": {
+            withHOC: false,
+            withComponent: false,
+            withHooks: true,
+          },
+        },
+      ],
     },
   },
 };
