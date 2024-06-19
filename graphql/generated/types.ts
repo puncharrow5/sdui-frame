@@ -17,16 +17,26 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
+/** 배경 종류 */
+export enum BackgroundType {
+  /** 색상 */
+  Color = 'COLOR',
+  /** 이미지 */
+  Image = 'IMAGE'
+}
+
 /** 컴포넌트 */
 export type ComponentEntity = {
   /** 배경 */
   background?: Maybe<Scalars['String']['output']>;
+  /** 배경 종류 */
+  backgroundType?: Maybe<BackgroundType>;
   /** 컴포넌트 종류 */
   componentType: ComponentType;
   /** 내용 */
   content?: Maybe<Scalars['String']['output']>;
   /** 내용 스타일 */
-  contentStyle?: Maybe<Scalars['String']['output']>;
+  contentStyle?: Maybe<ContentStyleEntity>;
   /** ID */
   id: Scalars['Int']['output'];
   /** 컴포넌트 이름 */
@@ -36,19 +46,40 @@ export type ComponentEntity = {
   /** 제목 */
   title?: Maybe<Scalars['String']['output']>;
   /** 제목 스타일 */
-  titleStyle?: Maybe<Scalars['String']['output']>;
+  titleStyle?: Maybe<TitleStyleEntity>;
 };
 
 /** 컴포넌트 종류 */
 export enum ComponentType {
   /** 푸터 */
-  Footer = 'Footer',
-  Inquiry = 'Inquiry',
+  Footer = 'FOOTER',
+  /** 문의 */
+  Inquiry = 'INQUIRY',
   /** 팝업 */
-  Popup = 'Popup',
+  Popup = 'POPUP',
   /** 섹션 */
-  Section = 'Section'
+  Section = 'SECTION'
 }
+
+/** 내용 스타일 */
+export type ContentStyleEntity = {
+  /** 컴포넌트 ID */
+  componentId: Scalars['Float']['output'];
+  /** ID */
+  id: Scalars['Int']['output'];
+  /** 아래쪽 마진 */
+  marginBottom?: Maybe<Scalars['Int']['output']>;
+  /** 왼쪽 마진 */
+  marginLeft?: Maybe<Scalars['Int']['output']>;
+  /** 오른쪽 마진 */
+  marginRight?: Maybe<Scalars['Int']['output']>;
+  /** 위쪽 마진 */
+  marginTop?: Maybe<Scalars['Int']['output']>;
+  /** 텍스트 색상 */
+  textColor?: Maybe<Scalars['String']['output']>;
+  /** 텍스트 크기 */
+  textSize?: Maybe<Scalars['Int']['output']>;
+};
 
 /** 헤더 */
 export type HeaderEntity = {
@@ -62,13 +93,15 @@ export type HeaderEntity = {
   siteId: Scalars['Int']['output'];
   /** 텍스트 색상 */
   textColor?: Maybe<Scalars['String']['output']>;
+  /** 텍스트 크기 */
+  textSize?: Maybe<Scalars['Int']['output']>;
 };
 
 export type Mutation = {
-  /** 컴포넌트 추가 */
-  addComponent: Scalars['Boolean']['output'];
   /** 회원가입 */
   createAdmin: Scalars['Boolean']['output'];
+  /** 컴포넌트 생성 */
+  createComponent: Scalars['Boolean']['output'];
   /** 사이트 생성 */
   createSite: Scalars['Boolean']['output'];
   /** 로그인 */
@@ -78,21 +111,16 @@ export type Mutation = {
 };
 
 
-export type MutationAddComponentArgs = {
-  background?: InputMaybe<Scalars['String']['input']>;
-  componentType: ComponentType;
-  content?: InputMaybe<Scalars['String']['input']>;
-  contentStyle?: InputMaybe<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
-  siteId: Scalars['Int']['input'];
-  title?: InputMaybe<Scalars['String']['input']>;
-  titleStyle?: InputMaybe<Scalars['String']['input']>;
-};
-
-
 export type MutationCreateAdminArgs = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
+};
+
+
+export type MutationCreateComponentArgs = {
+  componentType: ComponentType;
+  name: Scalars['String']['input'];
+  siteId: Scalars['Int']['input'];
 };
 
 
@@ -134,15 +162,35 @@ export type QueryFindOneSiteByIdArgs = {
 /** 사이트 */
 export type SiteEntity = {
   /** 컴포넌트 목록 */
-  components: Array<ComponentEntity>;
+  components?: Maybe<Array<ComponentEntity>>;
   /** 도메인 */
   domain: Scalars['String']['output'];
   /** 사이트 이메일 */
   email: Scalars['String']['output'];
   /** 헤더 */
-  header: HeaderEntity;
+  header?: Maybe<HeaderEntity>;
   /** ID */
   id: Scalars['Int']['output'];
+};
+
+/** 제목 스타일 */
+export type TitleStyleEntity = {
+  /** 컴포넌트 ID */
+  componentId: Scalars['Float']['output'];
+  /** ID */
+  id: Scalars['Int']['output'];
+  /** 아래쪽 마진 */
+  marginBottom?: Maybe<Scalars['Int']['output']>;
+  /** 왼쪽 마진 */
+  marginLeft?: Maybe<Scalars['Int']['output']>;
+  /** 오른쪽 마진 */
+  marginRight?: Maybe<Scalars['Int']['output']>;
+  /** 위쪽 마진 */
+  marginTop?: Maybe<Scalars['Int']['output']>;
+  /** 텍스트 색상 */
+  textColor?: Maybe<Scalars['String']['output']>;
+  /** 텍스트 크기 */
+  textSize?: Maybe<Scalars['Int']['output']>;
 };
 
 export type FindOneSiteByDomainQueryVariables = Exact<{
@@ -150,29 +198,43 @@ export type FindOneSiteByDomainQueryVariables = Exact<{
 }>;
 
 
-export type FindOneSiteByDomainQuery = { findOneSiteByDomain: { id: number, domain: string, email: string, components: Array<{ id: number, componentType: ComponentType, name: string, title?: string | null, titleStyle?: string | null, content?: string | null, contentStyle?: string | null, background?: string | null, siteId: number }>, header: { logo?: string | null, backgroundColor?: string | null, textColor?: string | null } } };
+export type FindOneSiteByDomainQuery = { findOneSiteByDomain: { email: string, domain: string, components?: Array<{ id: number, componentType: ComponentType, name: string, title?: string | null, content?: string | null, backgroundType?: BackgroundType | null, background?: string | null, titleStyle?: { marginTop?: number | null, marginBottom?: number | null, marginRight?: number | null, marginLeft?: number | null, textSize?: number | null, textColor?: string | null } | null, contentStyle?: { marginTop?: number | null, marginBottom?: number | null, marginRight?: number | null, marginLeft?: number | null, textSize?: number | null, textColor?: string | null } | null }> | null, header?: { logo?: string | null, backgroundColor?: string | null, textSize?: number | null, textColor?: string | null } | null } };
 
 
 export const FindOneSiteByDomainDocument = gql`
     query FindOneSiteByDomain($domain: String!) {
   findOneSiteByDomain(domain: $domain) {
-    id
-    domain
     email
+    domain
     components {
       id
       componentType
       name
       title
-      titleStyle
       content
-      contentStyle
+      backgroundType
       background
-      siteId
+      titleStyle {
+        marginTop
+        marginBottom
+        marginRight
+        marginLeft
+        textSize
+        textColor
+      }
+      contentStyle {
+        marginTop
+        marginBottom
+        marginRight
+        marginLeft
+        textSize
+        textColor
+      }
     }
     header {
       logo
       backgroundColor
+      textSize
       textColor
     }
   }

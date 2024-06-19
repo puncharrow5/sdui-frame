@@ -2,6 +2,7 @@
 
 import React from "react";
 import { ComponentEntity } from "@/graphql/generated/types";
+import * as S from "./Section.style";
 
 interface Props {
   id: string;
@@ -15,9 +16,9 @@ export const Section = ({ data, id }: Props) => {
       className={`flex flex-col justify-center items-center text-center w-full min-h-[754px] h-full`}
       style={{ backgroundColor: data.background ?? "#FFF" }}
     >
-      <h1 className={data.titleStyle ?? ""}>{data.title}</h1>
-      <div
-        className={data.contentStyle ?? ""}
+      <S.Title titleStyle={data.titleStyle ?? undefined}>{data.title}</S.Title>
+      <S.Content
+        contentStyle={data.contentStyle ?? undefined}
         dangerouslySetInnerHTML={{ __html: data.content as TrustedHTML }}
       />
     </div>

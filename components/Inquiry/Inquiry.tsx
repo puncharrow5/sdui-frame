@@ -63,11 +63,8 @@ export const Inquiry = ({ id, data, siteEmail }: Props) => {
     <div id={id} className="flex justify-center w-full min-h-[754px] h-full">
       <div className="flex items-center justify-center w-1/2 bg-blue-500">배경</div>
       <div className="flex flex-col justify-start w-1/2 p-20 bg-[#F9F9F9]">
-        <h1 className={data.titleStyle ?? ""}>{data.title}</h1>
-        <div
-          className={data.contentStyle ?? ""}
-          dangerouslySetInnerHTML={{ __html: data.content as TrustedHTML }}
-        />
+        <h1>{data.title}</h1>
+        <div dangerouslySetInnerHTML={{ __html: data.content as TrustedHTML }} />
 
         <div className="flex flex-col mt-10">
           <label className="mb-2 text-[20px]">이메일</label>
