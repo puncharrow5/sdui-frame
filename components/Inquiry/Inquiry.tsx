@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { ComponentEntity } from "@/graphql/generated/types";
-import { isValidEmail, isValidNumber } from "@/utils";
+import { BackgroundType, ComponentEntity } from "@/graphql/generated/types";
+import * as S from "./Inquiry.style";
 
 interface Props {
   id: string;
@@ -25,49 +25,34 @@ export const Inquiry = ({ id, data, siteEmail }: Props) => {
     });
   };
 
-  const handleSend = async () => {
-    if (!emailForm.email.trim().length) {
-      return alert("이메일을 입력해주세요.");
-    }
-    if (!isValidEmail(emailForm.email)) {
-      return alert("올바른 이메일 형식이 아닙니다.");
-    }
-    if (!emailForm.phoneNumber.trim().length) {
-      return alert("연락처를 입력해주세요.");
-    }
-    if (!isValidNumber(emailForm.phoneNumber)) {
-      return alert("올바른 전화번호 형식이 아닙니다.");
-    }
-    if (emailForm.content.length < 10) {
-      return alert("문의 내용을 10자 이상 작성해주세요.");
-    } else {
-      const response = await fetch("/api/sendEmail", {
-        method: "POST",
-        body: JSON.stringify(emailForm),
-      });
-
-      const post = await response.json();
-
-      if (post.status == 200) {
-        setEmailForm({ email: "", phoneNumber: "", content: "", siteEmail });
-        alert("문의하기를 완료했습니다.");
-        return;
-      } else {
-        alert("알 수 없는 오류가 발생했습니다.");
-        return;
-      }
-    }
-  };
-
   return (
-    <div id={id} className="flex justify-center w-full min-h-[754px] h-full">
-      <div className="flex items-center justify-center w-1/2 bg-blue-500">배경</div>
-      <div className="flex flex-col justify-start w-1/2 p-20 bg-[#F9F9F9]">
-        <h1>{data.title}</h1>
-        <div dangerouslySetInnerHTML={{ __html: data.content as TrustedHTML }} />
+    <S.Container id={id}>
+      <S.InquiryImage
+        id={id}
+        style={
+          data.componentStyle?.backgroundType === BackgroundType.Color
+            ? {
+                backgroundColor: data.componentStyle.background ?? "#FFF",
+              }
+            : data.componentStyle?.backgroundType === BackgroundType.Image
+            ? {
+                backgroundImage:
+                  `url(${process.env.NEXT_PUBLIC_BASE_URL}/file/${data.componentStyle.background})` ??
+                  "none",
+              }
+            : undefined
+        }
+      />
 
-        <div className="flex flex-col mt-10">
-          <label className="mb-2 text-[20px]">이메일</label>
+      <S.InquiryBox>
+        <S.Title $titleStyle={data.titleStyle ?? undefined}>{data.title}</S.Title>
+        <S.Content
+          $contentStyle={data.contentStyle ?? undefined}
+          dangerouslySetInnerHTML={{ __html: data.content ?? "" }}
+        />
+
+        <S.Form $textSize={data.contentStyle?.size ?? undefined}>
+          <label className="mb-2">이메일</label>
           <input
             value={emailForm.email}
             onChange={handleChange("email")}
@@ -75,7 +60,7 @@ export const Inquiry = ({ id, data, siteEmail }: Props) => {
             className="p-3 border rounded-md"
           />
 
-          <label className="mt-6 mb-2 text-[20px]">전화번호</label>
+          <label className="mt-6 mb-2">전화번호</label>
           <input
             value={emailForm.phoneNumber}
             onChange={handleChange("phoneNumber")}
@@ -83,22 +68,17 @@ export const Inquiry = ({ id, data, siteEmail }: Props) => {
             className="p-3 border rounded-md"
           />
 
-          <label className="mt-6 mb-2 text-[20px]">문의내용</label>
+          <label className="mt-6 mb-2">문의내용</label>
           <textarea
             value={emailForm.content}
             onChange={handleChange("content")}
             placeholder="최소 10자 이상 작성해주세요."
-            className="h-[200px] p-3 border rounded-md"
+            className="h-[200px] p-3 border rounded-md resize-none"
           />
 
-          <button
-            onClick={handleSend}
-            className="mt-16 p-4 bg-blue-900 border rounded-full text-xl"
-          >
-            문의하기
-          </button>
-        </div>
-      </div>
-    </div>
+          <button className="mt-16 p-4 bg-blue-900 border rounded-full text-xl">문의하기</button>
+        </S.Form>
+      </S.InquiryBox>
+    </S.Container>
   );
 };
